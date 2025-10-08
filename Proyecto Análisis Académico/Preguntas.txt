@@ -1,0 +1,19 @@
+¿Cuál es el separador de columnas (coma , o punto y coma ;)?
+El separador es una ,
+
+¿La primera fila contiene los nombres de las columnas (encabezados)? ¿Son claros?
+Si
+
+Inspecciona visualmente las primeras 20-30 filas. ¿Ves valores que te parezcan extraños o que faltan (celdas vacías, "N/A", "s/d")?
+Si, hay valores extraños y celdas vacías
+
+¿Los formatos son consistentes? Por ejemplo, ¿las fechas están siempre como DD/MM/AAAA o a veces cambian?
+
+
+Identifica las "claves" o "IDs" que podrían servir para relacionar unos ficheros con otros (ej: id_alumno en el fichero de calificaciones.csv y también en alumnos.csv).
+
+
+Relaciones:
+Entre Lineas y Objetivos, el numero de linea. 
+Entre Procesos e Indicadores una parte del id de Indicadores se ralaciona con proceso de Procesos.
+Entre Indicadores y Objetivos se relaciona una parte de Cod_PAA de Indicadores con Objetivo_PAA de Objetivo.

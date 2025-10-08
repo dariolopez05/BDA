@@ -1,0 +1,54 @@
+{
+    "sensores": [
+        {
+            "id": "SensorCO2",
+            "type": "SensorCO2",
+            "atributo": {
+                "ph": {
+                    "type": "number",
+                    "valor": "80",
+                    "magnitud": "ppm"
+                }
+            }
+        },
+
+        {
+            "id": "SensorTemp",
+            "type": "SensorTemperatura",
+            "atributo": {
+                "temperatura": {
+                    "type": "number",
+                    "valor": "80",
+                    "magnitud": "º"
+                },
+                "humedad": {
+                    "type": "number",
+                    "valor": "80",
+                    "magnitud": "%"
+                }
+            }
+        },
+
+        {
+            "id": "SensorCalid",
+            "type": "SensorCalidadAgua",
+            "atributo": {
+                "ph": {
+                    "type": "number",
+                    "valor": "80",
+                    "magnitud": "mgL"
+                },
+                "chlorine": {
+                    "type": "number",
+                    "valor": "80",
+                    "magnitud": "mgL"
+                },
+                "temperatura": {
+                    "type": "number",
+                    "valor": "80",
+                    "magnitud": "º"
+                }
+            }
+        }
+    ]
+}
