@@ -1,55 +1,67 @@
-import requests, time, random
+import requests, random, time
 
-URL = "http://localhost:1026"
-HEADERS = {
-    "Content-Type": "application/json",
-    # "Fiware-Service": "default",   # ← descomenta si lo usas
-    # "Fiware-ServicePath": "/",     # ← descomenta si lo usas
-}
+def update_all(count=400, delay=5):
+    URL = "http://localhost:1026/v2/op/update"
+    HEADERS = {
+        "Content-Type": "application/json",
+        # "Fiware-Service": "default",   # ← descomenta si lo usas
+        # "Fiware-ServicePath": "/",     # ← descomenta si lo usas
+    }
 
-ENTITIES = {
-    "SensorCO2": ["ph"],
-    "SensorTemp": ["temperatura", "humedad"],
-    "SensorCalid": ["ph", "chlorine", "temperatura"],
-}
+    # Rangos realistas
+    rng = {
+        "ph": (6.5, 8.5),
+        "temperatura": (15.0, 35.0),
+        "humedad": (30.0, 90.0),
+        "chlorine": (0.0, 5.0),
+    }
 
-# Rangos realistas por atributo
-RANGES = {
-    "ph": (6.5, 8.5),             # Agua normal
-    "temperatura": (15.0, 35.0),  # Temperatura ambiente
-    "humedad": (30.0, 90.0),      # Humedad relativa %
-    "chlorine": (0.0, 5.0),       # Cloro residual en mg/L
-}
+    print(f"🚀 Enviando {count} lotes (batch) de actualización 'a la vez' para las 3 entidades…\n")
 
-COUNT = 400   # número de updates por atributo
-DELAY = 0.2   # segundos entre updates (ajusta según rendimiento)
+    for i in range(1, count + 1):
+        # Valores aleatorios para este lote
+        ph1 = round(random.uniform(*rng["ph"]), 2)
+        t2  = round(random.uniform(*rng["temperatura"]), 2)
+        h2  = round(random.uniform(*rng["humedad"]), 2)
+        ph3 = round(random.uniform(*rng["ph"]), 2)
+        cl3 = round(random.uniform(*rng["chlorine"]), 2)
+        t3  = round(random.uniform(*rng["temperatura"]), 2)
 
-print("🚀 Iniciando carga masiva de datos aleatorios...\n")
+        payload = {
+            "actionType": "update",
+            "entities": [
+                {
+                    "id": "SensorCO2",
+                    "type": "SensorCO2",
+                    "ph": {"value": ph1, "type": "Float"}
+                },
+                {
+                    "id": "SensorTemp",
+                    "type": "SensorTemperatura",
+                    "temperatura": {"value": t2, "type": "Float"},
+                    "humedad": {"value": h2, "type": "Float"}
+                },
+                {
+                    "id": "SensorCalid",
+                    "type": "SensorCalidadAgua",
+                    "ph": {"value": ph3, "type": "Float"},
+                    "chlorine": {"value": cl3, "type": "Float"},
+                    "temperatura": {"value": t3, "type": "Float"}
+                }
+            ]
+        }
 
-total = 0
+        r = requests.post(URL, headers=HEADERS, json=payload)
+        if r.status_code in (204, 201):
+            print(f"[{i}/{count}] ✅ Batch OK | CO2.ph={ph1} | Temp.t={t2},h={h2} | Calid.ph={ph3},cl={cl3},t={t3}")
+        else:
+            print(f"[{i}/{count}] ⚠️  HTTP {r.status_code}: {r.text[:200]}")
 
-for eid, attrs in ENTITIES.items():
-    print(f"▶️  Entidad: {eid}")
-    for attr in attrs:
-        min_v, max_v = RANGES[attr]
-        print(f"   • Atributo: {attr} (rango {min_v}–{max_v})")
-        for i in range(1, COUNT + 1):
-            value = round(random.uniform(min_v, max_v), 2)
-            payload = {attr: {"value": value, "type": "Float"}}
-            url = f"{URL}/v2/entities/{eid}/attrs"
+        if delay:
+            time.sleep(delay)
 
-            try:
-                r = requests.patch(url, headers=HEADERS, json=payload)
-                if r.status_code in (204, 201):
-                    print(f"      [{i}/{COUNT}] ✅ {eid}.{attr} = {value}")
-                else:
-                    print(f"      [{i}/{COUNT}] ⚠️  Error {r.status_code}: {r.text.strip()[:100]}")
-            except Exception as e:
-                print(f"      [{i}/{COUNT}] ❌ Error de conexión: {e}")
+    print("\n✅ Listo: batches enviados correctamente.")
 
-            total += 1
-            if DELAY:
-                time.sleep(DELAY)
-        print(f"   ✓ Finalizado {attr}: {COUNT} updates\n")
-
-print(f"\n✅ Carga completada con éxito. Total de actualizaciones: {total}")
+# --- Ejecutar ---
+if __name__ == "__main__":
+    update_all(count=400, delay=5)  # ajusta count/delay si quieres
